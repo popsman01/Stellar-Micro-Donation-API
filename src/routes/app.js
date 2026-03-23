@@ -159,6 +159,34 @@ app.get('/admin/replay-stats', require('../middleware/rbac').requireAdmin(), (re
   }
 });
 
+// Audit logs endpoint (admin only)
+app.get('/admin/audit-logs', require('../middleware/rbac').requireAdmin(), async (req, res, next) => {
+  try {
+    const pagination = parseCursorPaginationQuery(req.query);
+    const filters = {
+      category: req.query.category,
+      action: req.query.action,
+      severity: req.query.severity,
+      userId: req.query.userId,
+      requestId: req.query.requestId,
+      startDate: req.query.startDate,
+      endDate: req.query.endDate,
+    };
+
+    const result = await AuditLogService.queryPaginated(filters, pagination);
+
+    res.setHeader('X-Total-Count', String(result.totalCount));
+    res.json({
+      success: true,
+      data: result.data,
+      count: result.data.length,
+      meta: result.meta
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Manual reconciliation trigger (admin only)
 app.post('/reconcile', require('../middleware/rbac').requireAdmin(), async (req, res, next) => {
   try {

@@ -449,6 +449,22 @@ class DonationService {
   }
 
   /**
+   * Get donations using cursor-based pagination.
+   * @param {Object} pagination - Pagination options.
+   * @param {{ timestamp: string, id: string }|null} pagination.cursor - Decoded cursor.
+   * @param {number} pagination.limit - Page size.
+   * @param {string} pagination.direction - Pagination direction.
+   * @returns {{ data: Array, totalCount: number, meta: Object }} Paginated donations.
+   */
+  getPaginatedDonations(pagination) {
+    return paginateCollection(Transaction.getAll(), {
+      ...pagination,
+      timestampField: 'timestamp',
+      idField: 'id',
+    });
+  }
+
+  /**
    * Get recent donations with limit
    * @param {number} limit - Maximum number of donations to return
    * @returns {Array} Array of sanitized transactions
