@@ -29,7 +29,6 @@ const log = require('../utils/log');
 const priceOracle = require('./PriceOracleService');
 const { buildOverpaymentRecord } = require('../utils/overpaymentDetector');
 const memoCollisionDetector = require('../utils/memoCollisionDetector');
-const { paginateCollection } = require('../utils/pagination');
 
 class DonationService {
   constructor(stellarService) {
@@ -379,7 +378,7 @@ class DonationService {
    * @param {string} params.idempotencyKey - Idempotency key
    * @returns {Object} Created transaction
    */
-  async createDonationRecord({ amount, currency = 'XLM', donor, recipient, memo, notes, tags, memoType = 'text', apiKeyId, apiKeyRole = 'user', idempotencyKey, receivedAmount, sessionId }) {
+  async createDonationRecord({ amount, currency = 'XLM', donor, recipient, memo, notes, tags, memoType = 'text', apiKeyId, apiKeyRole = 'user', idempotencyKey, receivedAmount, sessionId, campaign_id = null, memoEnvelope = null, encryptionMetadata = null }) {
     // Sanitize identifiers
     const sanitizedDonor = donor ? sanitizeIdentifier(donor) : 'Anonymous';
     const sanitizedRecipient = sanitizeIdentifier(recipient);
@@ -460,6 +459,8 @@ class DonationService {
       tags: tags || [],
       apiKeyId: apiKeyId || null,
       idempotencyKey: idempotencyKey,
+      memoEnvelope: memoEnvelope || null,
+      encryptionMetadata: encryptionMetadata || null,
       analyticsFee: feeCalculation.fee,
       analyticsFeePercentage: feeCalculation.feePercentage,
       // Overpayment fields (null when no overpayment)
