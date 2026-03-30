@@ -548,8 +548,6 @@ router.get(
   }
 );
 
-module.exports = router;
-
 /**
  * GET /transactions/stream
  * SSE endpoint for real-time confirmed transaction events.
